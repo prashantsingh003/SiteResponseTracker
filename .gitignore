@@ -1,0 +1,9 @@
+Required-data/info-docs*
+Required-data/database*
+Required-data/used-templates*
+
+env*
+.env
+.*
+!.gitignore
+__pycache__

@@ -1,0 +1,74 @@
+{% extends "index.html" %}
+{% block index %}
+<!-- Header -->
+<header id="header" class="ex-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Monitored Sites</h1>
+      </div> <!-- end of col -->
+    </div> <!-- end of row -->
+  </div> <!-- end of container -->
+</header> <!-- end of ex-header -->
+<!-- end of header -->
+<div class="ex-basic-2">
+  <div class="container">
+    <div class="row">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                ID
+              </th>
+              <th>
+                URL
+              </th>
+              <th>
+                Status
+              </th>
+              <th>
+                Role
+              </th>
+              <th>
+                Notify
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for url in url_data_list %}
+            <tr>
+              <td>
+                {{url.id}}
+              </td>
+              <td>
+                <a href="{{url_for('website.get_site_report',website_id=url.id)}}">{{url.url}}</a>
+                <span><a class="badge badge-primary" style="float: right;" href="{{url_for('website.update_website',website_id=url.id)}}">Update</a></span>
+              </td>
+              <td>
+                {% if url.active %}
+                <label class="badge badge-success">Active</label>
+                {% else %}
+                <label class="badge badge-danger">Inactive</label>
+                {% endif %}
+                <!-- <div class="progress">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          </div> -->
+              </td>
+              <td>
+                {{url.role}}
+              </td>
+              <td>
+                {{url.notify}}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{{url_for('website.add_website')}}">Add website</a>
+      </div>
+    </div> <!-- end of row -->
+  </div> <!-- end of container -->
+</div> <!-- end of ex-basic -->
+<!-- end of terms content -->
+{% endblock index %}

@@ -1,0 +1,187 @@
+{% extends "index.html" %}
+{% block index %}
+<!-- Header -->
+<header id="header" class="ex-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Site Performance</h1>
+      </div> <!-- end of col -->
+    </div> <!-- end of row -->
+  </div> <!-- end of container -->
+</header> <!-- end of ex-header -->
+<!-- end of header -->
+<div class="ex-basic-2">
+  <div class="container">
+
+    <!-- Canvas to draw chart -->
+    <canvas id="myChart" width="1000" height="300" style="max-width: 500;max-height:500;"></canvas>
+    <!-- Canvas Ends -->
+
+    <div class="row">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                Date
+              </th>
+              <th>
+                Average Response Time / Day
+              </th>
+              <th>
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in data_list %}
+            <tr>
+              <td>
+                {{data.date}}
+              </td>
+              <td>
+                {{data.average_response_time}}
+              </td>
+              <td>
+                {{data.status}}
+                <!-- <div class="progress">
+            <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+          </div> -->
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- end of row -->
+
+    <div class="row d-flex justify-content-center">
+      <a type="button" class="btn btn-success btn-icon-text"
+        href="{{url_for('website.update_website',website_id=website_id)}}">
+        <i class="ti-alert btn-icon-prepend"></i>
+        Update
+      </a>
+      <button type="button" class="btn btn-primary btn-icon-text" onclick="change_notification()" id="notification_status">
+        Enable Notifications
+        <i class="ti-file btn-icon-append"></i>
+      </button>
+      <a type="button" class="btn btn-danger btn-icon-text"
+        href="{{url_for('website.remove_website',website_id=website_id)}}">
+        <i class="ti-alert btn-icon-prepend"></i>
+        Remove
+      </a>
+    </div>
+  </div> <!-- end of container -->
+</div> <!-- end of ex-basic -->
+<!-- end of terms content -->
+
+<script 
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js" 
+  integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg==" 
+  crossorigin="anonymous" 
+  referrerpolicy="no-referrer">
+</script>
+
+<script>
+
+  var dates=[]
+  var avg_res_time=[]
+  var common_res_status=[]
+
+  async function get_data(){
+
+    const fetched_data= await fetch('/website/data/{{website_id}}')
+    let data=await fetched_data.json()
+    var weekly_data=data['weekly_data']
+    // console.log(weekly_data)
+    for(let i=0;i<weekly_data.length;i++){
+      dates.push(weekly_data[i]['date']);
+      avg_res_time.push(weekly_data[i]['average_response_time']);
+      common_res_status.push(weekly_data[i]['status']);
+    }
+    create_graph()
+  }
+  
+  function create_graph(){
+    const ctx = document.getElementById('myChart');
+    const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Average response time',
+            data: avg_res_time,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: false,
+        legend: {
+            position: 'top',
+        },
+        title: {
+            display: true,
+            text: 'Site Data'
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Seconds'
+                }
+            },
+            x: {
+                title: {
+                  display: true,
+                  text: 'Date'
+                }
+            }
+        }
+    }
+    });
+  }
+
+  function change_button(notify){
+    let ele=document.getElementById('notification_status');
+    if(notify){
+      ele.innerHTML='Disable Notifications'
+      ele.className='btn btn-warning btn-icon-text'
+    }
+    else{
+      ele.innerHTML='Enable Notifications'
+      ele.className='btn btn-primary btn-icon-text'
+    }
+  }
+
+  async function change_notification(){
+    notify_status=await send_notification_req('POST')
+    change_button(notify_status)
+  }
+
+  async function send_notification_req(methd){
+    const fetched_data=await fetch('/website/notification/{{website_id}}',{method:methd})
+    let data=await fetched_data.json()
+    return data['notify_status']
+  }
+
+  get_data()
+</script>
+{% endblock index %}

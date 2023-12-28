@@ -1,0 +1,78 @@
+{% extends "index.html" %}
+{% block index %}
+<!-- Header -->
+<header id="header" class="ex-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% if page_name %}
+                <h1>Update Site</h1>
+                {% else %}
+                <h1>Add Site</h1>
+                {% endif %}
+            </div> <!-- end of col -->
+        </div> <!-- end of row -->
+    </div> <!-- end of container -->
+</header> <!-- end of ex-header -->
+<!-- end of header -->
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Please Enter Data</h4>
+            {% if page_name %}
+            <form class="forms-sample" method="POST" action="{{url_for('website.update_website',website_id=website_id)}}">
+            {% else %}
+            <form class="forms-sample" method="POST" action="{{url_for('website.add_website')}}">
+            {% endif %}
+            
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group row">
+                    {{form.url.label(class="col-sm-3 col-form-label")}}
+                    <div class="col-sm-9">
+                        {% if form.url.errors %}
+                        {{ form.url(class="form-control form-control-lg is-invalid")}}
+                            <div class="invalid-feedback">
+                                {% for error in form.url.errors %}
+                                    <span>{{error}}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ form.url(class="form-control form-control-lg")}}
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if not page_name %}
+                    <div class="form-group row">
+                        {{form.role.label(class="col-sm-3 col-form-label")}}
+                        
+                        <div class="col-sm-4">
+                            <div class="form-check">
+                                {{form.role(class="form-check-input")}}
+                                    <i class="input-helper"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        {{form.notify.label(class="col-sm-3 col-form-label")}}
+                        
+                        <div class="col-sm-4">
+                            <div class="form-check">
+                                {{form.notify(class="form-check-input")}}
+                                    <i class="input-helper"></i>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    {{form.submit(class='btn btn-primary me-2')}}
+                    <button class="btn btn-light">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock index %}
