@@ -35,4 +35,5 @@ Scheduler functionalities:
 - Sending weekly mail to the user
 - Checking if the site’s been responding with the 200 or response status beginning with 2 for the last n hours. If not, then sending the user the mail.
 
-
+Database Schema
+![DB SCHEMA](../preview_images/db_schema.png)
